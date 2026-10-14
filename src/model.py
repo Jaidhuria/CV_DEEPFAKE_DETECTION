@@ -121,9 +121,9 @@ def build_model(
     if freeze_backbone:
         for param in backbone.features.parameters():
             param.requires_grad = False
-        print("[Model] Backbone FROZEN — only classification head will be trained.")
+        print("[Model] Backbone FROZEN - only classification head will be trained.")
     else:
-        print("[Model] Backbone UNFROZEN — full fine-tuning enabled.")
+        print("[Model] Backbone UNFROZEN - full fine-tuning enabled.")
 
     # ── Replace the final classifier with our custom binary head ──────────────
     # backbone.classifier is currently: [Dropout(0.2), Linear(1280, 1000)]

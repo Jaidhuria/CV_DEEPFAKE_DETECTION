@@ -66,7 +66,7 @@ import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src.dataset import get_dataloaders
 from src.model   import build_model
-from src.utils   import set_seed, plot_training_curves, compute_metrics
+from src.utils   import set_seed, plot_training_curves, compute_metrics, plot_confusion_matrix
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -419,7 +419,7 @@ def train(config: dict) -> None:
                 "class_to_idx" : class_to_idx,
                 "config"       : config,
             }, checkpoint_path)
-            print(f"  ✓ Checkpoint saved (val_loss={val_loss:.4f})")
+            print(f"  [+] Checkpoint saved (val_loss={val_loss:.4f})")
 
         if early_stopper.should_stop:
             print(f"\n[EarlyStopping] Triggered at epoch {epoch}. "
@@ -443,7 +443,12 @@ def train(config: dict) -> None:
     print(f"[Test] Loss: {test_loss:.4f}  |  Accuracy: {test_acc:.2f}%")
 
     class_names = [idx_to_class[i] for i in sorted(idx_to_class.keys())]
-    compute_metrics(all_labels, all_preds, class_names=class_names)
+    cm = compute_metrics(all_labels, all_preds, class_names=class_names)
+    plot_confusion_matrix(
+        cm,
+        class_names=class_names,
+        save_path=os.path.join(config["log_dir"], "confusion_matrix.png")
+    )
 
     # ── 8. Save training curves ────────────────────────────────────────────────
     plot_training_curves(

@@ -5,19 +5,19 @@ predict.py — Phase 4: Standalone Inference Script (The Deliverable)
 
 USAGE
 -----
-    python predict.py --image path/to/face.jpg
-    python predict.py --image path/to/face.jpg --checkpoint checkpoints/best_model.pth
-    python predict.py --image path/to/face.jpg --show
+    python predict.py --image path/to/image.jpg
+    python predict.py --image path/to/image.jpg --checkpoint checkpoints/best_model.pth
+    python predict.py --image path/to/image.jpg --show
 
 OUTPUT EXAMPLE
 --------------
-    ┌─────────────────────────────────────────────┐
-    │  Deepfake Detection Result                  │
-    │─────────────────────────────────────────────│
-    │  File   : examples/face.jpg                 │
-    │  Result : 🔴 FAKE                           │
-    │  Score  : FAKE=98.2%  |  REAL=1.8%          │
-    └─────────────────────────────────────────────┘
+    +-----------------------------------------------+
+    |  Deepfake Detection Result                    |
+    |-----------------------------------------------|
+    |  File    : examples/sample.jpg                |
+    |  Result  : FAKE                               |
+    |  Score   : FAKE=98.2%  |  REAL=1.8%          |
+    +-----------------------------------------------+
 
 HOW INFERENCE WORKS
 -------------------
@@ -220,33 +220,32 @@ def print_result(result: dict) -> None:
     Print a formatted result box to stdout.
 
     Example output:
-    ┌─────────────────────────────────────────────┐
-    │  Deepfake Detection Result                  │
-    │─────────────────────────────────────────────│
-    │  File   : /path/to/face.jpg                 │
-    │  Result : 🔴 FAKE                           │
-    │  Score  : FAKE=98.2%  |  REAL=1.8%          │
-    └─────────────────────────────────────────────┘
+    +-----------------------------------------------+
+    |  Deepfake Detection Result                    |
+    |-----------------------------------------------|
+    |  File    : /path/to/image.jpg                 |
+    |  Result  : FAKE                               |
+    |  Score   : FAKE=98.2%  |  REAL=1.8%          |
+    +-----------------------------------------------+
     """
     label      = result["label"]
     confidence = result["confidence"]
     probs      = result["probabilities"]
     path       = result["image_path"]
 
-    icon   = "🔴" if label == "FAKE" else "🟢"
     width  = 47
-
     score_str = "  |  ".join(
         f"{cls}={prob:.1f}%" for cls, prob in probs.items()
     )
 
-    print("\n" + "┌" + "─" * width + "┐")
-    print(f"│  {'Deepfake Detection Result':<{width-2}}│")
-    print("│" + "─" * width + "│")
-    print(f"│  {'File':<8}: {os.path.basename(path):<{width-12}}│")
-    print(f"│  {'Result':<8}: {icon} {label:<{width-13}}│")
-    print(f"│  {'Score':<8}: {score_str:<{width-12}}│")
-    print("└" + "─" * width + "┘\n")
+    border = "+" + "-" * width + "+"
+    print("\n" + border)
+    print(f"|  {'Deepfake Detection Result':<{width-2}}|")
+    print("|" + "-" * width + "|")
+    print(f"|  {'File':<8}: {os.path.basename(path):<{width-12}}|")
+    print(f"|  {'Result':<8}: {label:<{width-12}}|")
+    print(f"|  {'Score':<8}: {score_str:<{width-12}}|")
+    print(border + "\n")
 
     # Machine-readable single-line format (useful for piping to other scripts)
     print(f"Prediction: {label} ({confidence:.1f}% confidence)")
@@ -263,8 +262,8 @@ def parse_args():
         epilog="""
 Examples:
   python predict.py --image data/test/FAKE/0001.jpg
-  python predict.py --image uploads/profile.png --show
-  python predict.py --image face.jpg --checkpoint checkpoints/best_model.pth
+  python predict.py --image uploads/sample.png --show
+  python predict.py --image sample.jpg --checkpoint checkpoints/best_model.pth
         """
     )
     parser.add_argument(

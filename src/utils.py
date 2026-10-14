@@ -133,9 +133,9 @@ def compute_metrics(
 
     WHY F1 MATTERS HERE
     -------------------
-    In a real-world scenario (e.g., a dating site flagging fake profiles), missing
-    a fake (low recall) is more harmful than a false alarm (low precision).
-    F1 balances both, making it the primary metric to report.
+    In a real-world scenario (e.g., an e-commerce platform flagging synthetic product listings
+    or a digital content verification system), missing a fake (low recall) is often more harmful
+    than a false alarm (low precision). F1 balances both, making it the primary metric to report.
 
     Args
     ----
@@ -154,3 +154,43 @@ def compute_metrics(
     for i, row in enumerate(cm):
         print(f"{class_names[i]:>10}  {row[0]:>6}  {row[1]:>6}")
     print("=" * 60 + "\n")
+    return cm
+
+
+def plot_confusion_matrix(
+    cm: np.ndarray,
+    class_names: list[str] = ["FAKE", "REAL"],
+    save_path: str = "logs/confusion_matrix.png"
+) -> None:
+    """
+    Save a normalized & annotated heatmap of the confusion matrix.
+    """
+    os.makedirs(os.path.dirname(save_path), exist_ok=True)
+    fig, ax = plt.subplots(figsize=(6, 5))
+    im = ax.imshow(cm, interpolation="nearest", cmap=plt.cm.Blues)
+    ax.figure.colorbar(im, ax=ax)
+
+    ax.set(
+        xticks=np.arange(cm.shape[1]),
+        yticks=np.arange(cm.shape[0]),
+        xticklabels=class_names,
+        yticklabels=class_names,
+        title="CIFAKE Test Set - Confusion Matrix",
+        ylabel="True Label",
+        xlabel="Predicted Label"
+    )
+
+    thresh = cm.max() / 2.0
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            ax.text(
+                j, i, f"{cm[i, j]:,}",
+                ha="center", va="center",
+                color="white" if cm[i, j] > thresh else "black",
+                fontsize=11, fontweight="bold"
+            )
+
+    plt.tight_layout()
+    plt.savefig(save_path, dpi=150)
+    plt.close()
+    print(f"[Utils] Confusion matrix saved -> {save_path}")

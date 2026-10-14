@@ -12,13 +12,20 @@ __pycache__/
 venv/
 env/
 
-# Local datasets and model outputs
+# Local datasets
 data/
-checkpoints/
-logs/
-*.pth
+
+# Model checkpoints (ignore intermediate weights, track verified best_model.pth)
+checkpoints/*
+!checkpoints/best_model.pth
 *.pt
 *.onnx
+
+# Training logs and visual verification curves (committed as proof of training)
+logs/*
+!logs/training_log.csv
+!logs/training_curves.png
+!logs/confusion_matrix.png
 
 # IDE and operating-system files
 .vscode/
